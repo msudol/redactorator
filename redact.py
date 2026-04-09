@@ -11,14 +11,16 @@ from patterns.base import MaskMode, PatternGroup, PatternMode
 from patterns.dob import DOB_GROUP
 from patterns.phone import PHONE_GROUP
 from patterns.ssn import SSN_GROUP
+from patterns.ids import IDS_GROUP
 
 PATTERNS: Dict[str, PatternGroup] = {
     "dobs": DOB_GROUP,
     "phones": PHONE_GROUP,
     "ssns": SSN_GROUP,
+    "ids": IDS_GROUP,
 }
 
-PATTERN_ORDER = (DOB_GROUP, PHONE_GROUP, SSN_GROUP)
+PATTERN_ORDER = (DOB_GROUP, PHONE_GROUP, SSN_GROUP, IDS_GROUP)
 
 
 def find_all(text: str, mode: PatternMode = "strict") -> Dict[str, list[str]]:

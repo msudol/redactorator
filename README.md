@@ -7,6 +7,8 @@ Human-auditable regex helpers for identifying labeled sensitive data like dates 
 - Labeled DOB detection (e.g., `DOB: 01/02/1980`, `Born on Jan 1, 1980`)
 - Labeled SSN detection (e.g., `SSN: 123-45-6789`, `Social Security # 123456789`)
 - Labeled phone detection (e.g., `Phone: 123-456-7890`, `Tel: (123) 456-7890`)
+- Labeled phone detection (e.g., `Phone: 123-456-7890`, `Tel: (123) 456-7890`)
+- Generic labeled ID detection (e.g., `ID: ABC-12345`, `Passport: A1234567`, `Member ID: 123456789`) with an optional aggressive unlabeled mode for long alphanumeric tokens
 - Small helper API for matching and detection
 - Redaction helpers with fixed or length-based masking
 
@@ -31,15 +33,20 @@ print(redact.redact_all(text, mask_mode="length", mask_char="#"))
 
 # Pattern groups
 dob_group = redact.PATTERNS["dobs"]
-ssn_group = redact.PATTERNS["ssns"]
-
 print(dob_group.find("DOB: 01/02/1980"))
 print(dob_group.contains("DOB: 01/02/1980"))
+
+ssn_group = redact.PATTERNS["ssns"]
+print(ssn_group.redact("SSN: 123-45-6789"))
 print(ssn_group.find("123-45-6789", mode="aggressive"))
-print(ssn_group.redact("123-45-6789", mode="aggressive"))
 
 phone_group = redact.PATTERNS["phones"]
+print(phone_group.redact("PHONE: 123-456-7890")
 print(phone_group.find("123-456-7890", mode="aggressive"))
+
+ids_group = redact.PATTERNS["ids"]
+print(ids_group.redact("ID: ABC-12345"))
+print(ids_group.find("ABC12345678", mode="aggressive"))
 ```
 
 ## Helper API
@@ -61,7 +68,8 @@ print(phone_group.find("123-456-7890", mode="aggressive"))
 
 ## Pattern modes
 
-- `mode="strict"` (default) matches labeled values only.
+- `mode="strict"` (default) will only match when a clear label is present.
+	(e.g., `DOB:`, `Passport:`, `Phone:`).
 - `mode="aggressive"` also matches unlabeled values (DOBs, phones, SSNs).
 
 ## Redaction order
@@ -92,3 +100,4 @@ python -m unittest discover -s tests -p "test_*.py" -v
 	- `PATTERNS["dobs"].find(text, mode="aggressive")`
 	- `PATTERNS["phones"].contains(text, mode="aggressive")`
 	- `PATTERNS["ssns"].redact(text, mode="aggressive")`
+	- `PATTERNS["ids"].find(text, mode="aggressive")`
