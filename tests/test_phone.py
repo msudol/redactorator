@@ -14,6 +14,7 @@ class TestPhoneRegex(PrettyTestCase):
         self.assertFalse(self.group.contains(text), msg=f"Expected NO phone match for: {text}")
         self.assertEqual(self.group.find(text), [], msg=f"Expected NO phones for: {text}")
 
+    # Verify common labeled phone formats are detected (various separators)
     def test_labeled_phone_variants(self):
         self.assert_match("Phone: 123-456-7890")
         self.assert_match("Phone # (123) 456-7890")
@@ -25,10 +26,12 @@ class TestPhoneRegex(PrettyTestCase):
         self.assertEqual(result["dobs"], [])
         self.assertEqual(result["ssns"], [])
 
+    # Ensure numbers in non-phone contexts are not matched as phones
     def test_non_phone_text_does_not_match(self):
         self.assert_no_match("Ticket # 123-456-7890")
         self.assert_no_match("SSN: 123-45-6789")
 
+    # Redaction should keep the label and mask the phone value
     def test_redact_phones_preserves_label(self):
         self.assertEqual(
             self.group.redact("Phone: 123-456-7890"),
@@ -39,6 +42,7 @@ class TestPhoneRegex(PrettyTestCase):
             "Tel: **************",
         )
 
+    # Aggressive mode should match unlabeled phone numbers
     def test_aggressive_phone_mode(self):
         self.assertTrue(self.group.contains("123-456-7890", mode="aggressive"))
         self.assertEqual(
@@ -50,6 +54,7 @@ class TestPhoneRegex(PrettyTestCase):
             "***",
         )
 
+    # Strict mode should only match labeled phone numbers
     def test_strict_phone_mode_requires_labels(self):
         self.assertFalse(self.group.contains("123-456-7890", mode="strict"))
         self.assertEqual(self.group.find("123-456-7890", mode="strict"), [])

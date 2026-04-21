@@ -14,6 +14,7 @@ class TestBirthdateRegex(PrettyTestCase):
         self.assertFalse(self.group.contains(text), msg=f"Expected NO match for: {text}")
         self.assertEqual(self.group.find(text), [], msg=f"Expected NO DOBs for: {text}")
 
+    # Verify that common labeled DOB formats are detected in strict mode
     def test_labeled_birthdates(self):
         self.assert_match("DOB: 01/02/1980")
         self.assert_match("dob 1/2/80")
@@ -26,17 +27,20 @@ class TestBirthdateRegex(PrettyTestCase):
         self.assertGreater(len(result["dobs"]), 0)
         self.assertEqual(result["ssns"], [])
 
+    # Verify that natural-language "born" phrases are detected as DOBs
     def test_born_phrases(self):
         self.assert_match("He was born on January 1, 1980 in Texas.")
         self.assert_match("She was born 02-03-79.")
         self.assert_match("Born on 1 Jan 1980.")
         self.assert_match("Born 1st Jan 1980.")
 
+    # Ensure unrelated date mentions (incident/report/appointment) do not match
     def test_non_birth_dates_do_not_match(self):
         self.assert_no_match("Incident date: 01/02/1980")
         self.assert_no_match("Report created on Jan 1, 1980")
         self.assert_no_match("Appointment date 1 Jan 1980")
 
+    # Redaction should preserve surrounding label text and only mask the date
     def test_redact_dobs_preserves_label(self):
         self.assertEqual(
             self.group.redact("DOB: 01/02/1980"),
@@ -59,6 +63,7 @@ class TestBirthdateRegex(PrettyTestCase):
             "Born on ##########.",
         )
 
+    # Aggressive mode should match unlabeled DOBs (e.g., raw dates)
     def test_aggressive_dob_mode(self):
         self.assertTrue(self.group.contains("01/02/1980", mode="aggressive"))
         self.assertEqual(
@@ -70,6 +75,7 @@ class TestBirthdateRegex(PrettyTestCase):
             "***",
         )
 
+    # Strict mode should NOT match unlabeled DOBs
     def test_strict_dob_mode_requires_labels(self):
         self.assertFalse(self.group.contains("01/02/1980", mode="strict"))
         self.assertEqual(self.group.find("01/02/1980", mode="strict"), [])

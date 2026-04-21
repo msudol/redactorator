@@ -9,6 +9,8 @@ SSN_LABEL = (
     r"\b(?:"
     r"ssn|"
     r"ss\s*#|"
+    r"soc\s*no|"
+    r"soc\s*#|"
     r"social\s*security(?:\s*number)?|"
     r"social\s*security\s*#"
     r")(?:\b|\W)"
