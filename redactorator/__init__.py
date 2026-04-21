@@ -1,17 +1,20 @@
-"""Human-auditable regex helpers for common sensitive identifiers.
+"""Public API for the redactorator package.
 
-This module focuses on explicit, labeled matches for DOBs and SSNs to reduce
-false positives. Helper functions expose a small API for finding or detecting
-matches without touching raw regex patterns.
+This module exposes a small, stable surface for consumers:
+- PATTERNS: mapping of pattern-group name -> PatternGroup
+- PATTERN_ORDER: tuple controlling redaction ordering
+- find_all / redact_all convenience helpers
+
+Pattern implementations live under ``redactorator.patterns``.
 """
 
 from typing import Dict
 
-from patterns.base import MaskMode, PatternGroup, PatternMode
-from patterns.dob import DOB_GROUP
-from patterns.phone import PHONE_GROUP
-from patterns.ssn import SSN_GROUP
-from patterns.ids import IDS_GROUP
+from .patterns.base import MaskMode, PatternGroup, PatternMode
+from .patterns.dob import DOB_GROUP
+from .patterns.phone import PHONE_GROUP
+from .patterns.ssn import SSN_GROUP
+from .patterns.ids import IDS_GROUP
 
 PATTERNS: Dict[str, PatternGroup] = {
     "dobs": DOB_GROUP,
@@ -40,3 +43,5 @@ def redact_all(
         text = group.redact(text, mask=mask, mask_mode=mask_mode, mask_char=mask_char, mode=mode)
     return text
 
+
+__all__ = ["PATTERNS", "PATTERN_ORDER", "find_all", "redact_all"]

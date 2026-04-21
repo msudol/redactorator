@@ -1,4 +1,4 @@
-import redact
+import redactorator as redact
 from test_utils import PrettyTestCase
 
 

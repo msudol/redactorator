@@ -15,7 +15,7 @@ Human-auditable regex helpers for identifying labeled sensitive data like dates 
 ## Usage
 
 ```python
-import redact
+import redactorator as redact
 
 text = "DOB: 01/02/1980, Phone: 123-456-7890, SSN: 123-45-6789"
 
